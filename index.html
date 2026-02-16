@@ -22,9 +22,23 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font-body);-webkit-f
 a,button,.svc-tag,.progress-dot,.cta-btn,.nav-links a{cursor:pointer}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center;mix-blend-mode:difference}
 .logo{font-family:var(--font-mono);font-size:0.85rem;letter-spacing:0.3em;text-transform:uppercase}
-.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
 .nav-links a{color:var(--fg-dim);text-decoration:none;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.3s}
 .nav-links a:hover{color:var(--fg)}
+.nav-toggle{display:none;background:none;border:none;color:var(--fg);font-size:1.5rem;cursor:pointer}
+.nav-dropdown{position:relative;padding-bottom:1rem;margin-bottom:-1rem}
+.nav-dropdown>span{color:var(--fg-dim);font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:color 0.3s;display:inline-flex;align-items:center;gap:0.35rem}
+.nav-dropdown>span:hover{color:var(--fg)}
+.nav-dropdown>span::after{content:'▾';font-size:0.6rem;transition:transform 0.3s}
+.nav-dropdown:hover>span,.nav-dropdown:hover>span::after{color:var(--fg)}
+.nav-dropdown:hover>span::after{transform:rotate(180deg)}
+.dropdown-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(4px);opacity:0;pointer-events:none;background:rgba(18,18,18,0.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:0.5rem;padding:0.5rem 0;min-width:260px;transition:opacity 0.25s,transform 0.25s;z-index:200;list-style:none;mix-blend-mode:normal}
+.nav-dropdown:hover .dropdown-menu{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+.dropdown-menu li a{display:flex;align-items:center;gap:0.75rem;padding:0.65rem 1.25rem;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg-dim);transition:background 0.2s,color 0.2s}
+.dropdown-menu li a:hover{background:rgba(240,237,232,0.06);color:var(--fg)}
+.dropdown-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.nav-cta{background:var(--fg);color:var(--bg) !important;padding:0.5rem 1.25rem;border-radius:2rem;font-weight:700;letter-spacing:0.08em;transition:opacity 0.3s,transform 0.2s !important}
+.nav-cta:hover{opacity:0.85;transform:scale(1.04)}
 
 /* ═══ HERO + WARP (unchanged) ═══ */
 .hero-warp{height:350vh;position:relative}
@@ -157,14 +171,38 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 3rem;display:
   .pillar-number{font-size:clamp(8rem,20vw,14rem);left:1.5rem}
   .pillar-stats{gap:1.5rem;flex-wrap:wrap}
   .radar-wrap{width:60vh;height:60vh;right:-25%;top:50%;opacity:0.4}
-  nav{padding:1rem 1.5rem}.nav-links{display:none}
+  nav{padding:1rem 1.5rem;flex-wrap:wrap}
+  .nav-toggle{display:block}
+  .nav-links{display:none;flex-direction:column;width:100%;gap:0.25rem;padding-top:1rem}
+  .nav-links.open{display:flex}
+  .nav-dropdown>span{padding:0.5rem 0;display:block}
+  .dropdown-menu{position:static;transform:none;opacity:1;pointer-events:auto;background:rgba(240,237,232,0.05);border:none;border-radius:0.25rem;min-width:auto;padding:0.25rem 0;margin-top:0.25rem}
+  .nav-dropdown:hover .dropdown-menu{transform:none}
+  .nav-cta{display:inline-block;margin-top:0.5rem;text-align:center}
 }
 </style>
 </head>
 <body>
 <canvas id="cursorLight"></canvas>
 <div id="cursorDot"></div>
-<nav><div class="logo">Parsec</div><ul class="nav-links"><li><a href="#pillarsSection">Services</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+<nav>
+  <div class="logo">Parsec</div>
+  <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+  <ul class="nav-links">
+    <li class="nav-dropdown">
+      <span>Services</span>
+      <ul class="dropdown-menu">
+        <li><a href="service-maintenance.html"><span class="dropdown-dot" style="background:#8bd450"></span>Maintenance &amp; Support</a></li>
+        <li><a href="service-cybersecurity.html"><span class="dropdown-dot" style="background:#e74c3c"></span>Cybersecurity &amp; Testing</a></li>
+        <li><a href="service-analytics.html"><span class="dropdown-dot" style="background:#3498db"></span>Data Analytics &amp; BI</a></li>
+        <li><a href="service-devops.html"><span class="dropdown-dot" style="background:#f39c12"></span>DevOps &amp; Cloud</a></li>
+        <li><a href="service-consultancy.html"><span class="dropdown-dot" style="background:#9b59b6"></span>Consultancy &amp; Training</a></li>
+      </ul>
+    </li>
+    <li><a href="about.html">About Us</a></li>
+    <li><a href="about.html#contact" class="nav-cta">Talk To Us Today</a></li>
+  </ul>
+</nav>
 <div class="progress-track"><div class="progress-dot" data-target="0"></div><div class="progress-dot" data-target="1"></div><div class="progress-dot" data-target="2"></div><div class="progress-dot" data-target="3"></div><div class="progress-dot" data-target="4"></div></div>
 
 <!-- HERO + WARP + INTRO (unchanged) -->
@@ -717,12 +755,11 @@ const skyCanvas=document.getElementById('footerSky');
 const skyCtx=skyCanvas.getContext('2d');
 let SW,SH;
 
-// Generate stars once
 const stars=[];
 for(let i=0;i<200;i++){
   stars.push({
     x:Math.random(),
-    y:Math.random()*0.7, // mostly in upper portion
+    y:Math.random()*0.7,
     size:0.3+Math.random()*1.5,
     brightness:0.15+Math.random()*0.5,
     twinkleSpeed:0.002+Math.random()*0.008,
@@ -741,25 +778,24 @@ function resSky(){
 resSky();addEventListener('resize',resSky);
 
 let skyTime=0;
+const shootingStars=[];
 
 function drawSky(){
   skyCtx.clearRect(0,0,SW,SH);
   skyTime+=1;
 
-  // 1) Sky gradient: black → deep navy → dark blue → atmospheric blue-purple at horizon
   const skyGrad=skyCtx.createLinearGradient(0,0,0,SH);
-  skyGrad.addColorStop(0,'#0a0a0a');        // pure black — seamless with bg
-  skyGrad.addColorStop(0.15,'#0a0a0f');     // barely perceptible shift
-  skyGrad.addColorStop(0.35,'#0c0e1a');     // deep space navy
-  skyGrad.addColorStop(0.55,'#0f1428');     // midnight blue
-  skyGrad.addColorStop(0.72,'#141a35');     // dark blue
-  skyGrad.addColorStop(0.85,'#1a2242');     // pre-dawn blue
-  skyGrad.addColorStop(0.95,'#1e2a52');     // atmosphere edge
-  skyGrad.addColorStop(1,'#1a2242');        // pull back slightly
+  skyGrad.addColorStop(0,'#0a0a0a');
+  skyGrad.addColorStop(0.15,'#0a0a0f');
+  skyGrad.addColorStop(0.35,'#0c0e1a');
+  skyGrad.addColorStop(0.55,'#0f1428');
+  skyGrad.addColorStop(0.72,'#141a35');
+  skyGrad.addColorStop(0.85,'#1a2242');
+  skyGrad.addColorStop(0.95,'#1e2a52');
+  skyGrad.addColorStop(1,'#1a2242');
   skyCtx.fillStyle=skyGrad;
   skyCtx.fillRect(0,0,SW,SH);
 
-  // 2) Horizon glow — warm atmospheric band
   const horizonY=SH*0.92;
   const hGlow=skyCtx.createRadialGradient(SW/2,horizonY,0,SW/2,horizonY,SW*0.6);
   hGlow.addColorStop(0,'rgba(180,140,90,0.08)');
@@ -769,7 +805,6 @@ function drawSky(){
   skyCtx.fillStyle=hGlow;
   skyCtx.fillRect(0,horizonY-SH*0.3,SW,SH*0.4);
 
-  // Thin bright atmospheric line at horizon
   const lineGrad=skyCtx.createLinearGradient(SW*0.15,0,SW*0.85,0);
   lineGrad.addColorStop(0,'rgba(140,160,200,0)');
   lineGrad.addColorStop(0.3,'rgba(140,160,200,0.06)');
@@ -779,24 +814,17 @@ function drawSky(){
   skyCtx.fillStyle=lineGrad;
   skyCtx.fillRect(0,horizonY-1,SW,3);
 
-  // 3) Stars — twinkling, fade out as sky brightens near bottom
   stars.forEach(s=>{
     const sx=s.x*SW;
     const sy=s.y*SH;
-
-    // Fade stars out in lower half where sky brightens
     const yFade=s.y<0.4?1:Math.max(0,1-(s.y-0.4)/0.35);
     const twinkle=0.5+0.5*Math.sin(skyTime*s.twinkleSpeed+s.twinklePhase);
     const alpha=s.brightness*yFade*twinkle;
-
     if(alpha<0.01)return;
-
     skyCtx.beginPath();
     skyCtx.arc(sx,sy,s.size,0,Math.PI*2);
     skyCtx.fillStyle=`rgba(220,225,240,${alpha})`;
     skyCtx.fill();
-
-    // Brighter stars get a tiny glow
     if(s.size>1&&alpha>0.2){
       const sg=skyCtx.createRadialGradient(sx,sy,0,sx,sy,s.size*4);
       sg.addColorStop(0,`rgba(200,210,240,${alpha*0.15})`);
@@ -805,6 +833,56 @@ function drawSky(){
       skyCtx.fillRect(sx-s.size*4,sy-s.size*4,s.size*8,s.size*8);
     }
   });
+
+  // Shooting stars
+  shootingStars.forEach(ss=>{
+    ss.life++;
+    const progress=ss.life/ss.maxLife;
+    if(progress>=1){ss.dead=true;return}
+    const cx=ss.x+ss.vx*ss.life;
+    const cy=ss.y+ss.vy*ss.life;
+    const fade=progress<0.15?progress/0.15:Math.max(0,1-(progress-0.15)/0.85);
+    const alpha=fade*ss.brightness;
+    if(alpha<0.005)return;
+    const tailLen=ss.tailLength;
+    const tx=cx-ss.vx*tailLen;
+    const ty=cy-ss.vy*tailLen;
+    const trailGrad=skyCtx.createLinearGradient(tx,ty,cx,cy);
+    trailGrad.addColorStop(0,'rgba(220,230,255,0)');
+    trailGrad.addColorStop(0.6,`rgba(220,230,255,${alpha*0.3})`);
+    trailGrad.addColorStop(1,`rgba(255,255,255,${alpha})`);
+    skyCtx.strokeStyle=trailGrad;
+    skyCtx.lineWidth=ss.width;
+    skyCtx.lineCap='round';
+    skyCtx.beginPath();
+    skyCtx.moveTo(tx,ty);
+    skyCtx.lineTo(cx,cy);
+    skyCtx.stroke();
+    const headGlow=skyCtx.createRadialGradient(cx,cy,0,cx,cy,ss.width*4);
+    headGlow.addColorStop(0,`rgba(200,210,240,${alpha*0.5})`);
+    headGlow.addColorStop(1,'rgba(200,210,240,0)');
+    skyCtx.fillStyle=headGlow;
+    skyCtx.beginPath();
+    skyCtx.arc(cx,cy,ss.width*4,0,Math.PI*2);
+    skyCtx.fill();
+  });
+  for(let i=shootingStars.length-1;i>=0;i--){if(shootingStars[i].dead)shootingStars.splice(i,1)}
+  if(Math.random()<0.008&&shootingStars.length<3){
+    const angle=0.3+Math.random()*0.5;
+    const speed=3+Math.random()*4;
+    shootingStars.push({
+      x:Math.random()*SW*0.8,
+      y:Math.random()*SH*0.25,
+      vx:Math.cos(angle)*speed,
+      vy:Math.sin(angle)*speed,
+      life:0,
+      maxLife:40+Math.random()*60,
+      tailLength:12+Math.random()*18,
+      width:0.5+Math.random()*1.2,
+      brightness:0.4+Math.random()*0.5,
+      dead:false
+    });
+  }
 
   requestAnimationFrame(drawSky);
 }
