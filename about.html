@@ -202,13 +202,17 @@ nav.nav-ground .back-link:hover{color:var(--accent)}
 .contact-card a{color:var(--dark);border-bottom:1px solid var(--border-dark);transition:border-color 0.3s}
 .contact-card a:hover{border-color:var(--accent)}
 
-.cta-footer{padding:6rem 3rem;text-align:center;border-top:1px solid var(--border-dark);position:relative;z-index:1}
-.cta-footer h2{font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2.5rem);font-weight:700;margin-bottom:1rem}
-.cta-footer p{color:var(--dark-dim);max-width:500px;margin:0 auto 2rem;line-height:1.6}
-.cta-btn{display:inline-block;padding:1rem 2.5rem;border:1px solid var(--accent);color:var(--accent);font-family:var(--font-mono);font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;
-  transition:all 0.4s cubic-bezier(0.2,0.9,0.3,1)}
-.cta-btn:hover{background:var(--accent);color:#fff;transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,165,90,0.2)}
-.footer-bottom{padding:2rem 3rem;border-top:1px solid var(--border-dark);font-size:0.7rem;color:var(--dark-dim);text-align:center;font-family:var(--font-mono);position:relative;z-index:1}
+.scenery-flow{position:relative;overflow:hidden}
+#sceneryCanvas{position:absolute;inset:0;z-index:0;pointer-events:none}
+.scenery-contact{border-top:1px solid var(--border-dark);position:relative;z-index:1}
+.scenery-contact .contact-card{background:rgba(240,237,232,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.cta-footer{padding:6rem 3rem 4rem;text-align:center;position:relative;z-index:1}
+.cta-footer h2{font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2.5rem);font-weight:700;margin-bottom:1rem;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,0.5)}
+.cta-footer p{color:rgba(255,255,255,0.85);max-width:500px;margin:0 auto 2rem;line-height:1.6;text-shadow:0 1px 10px rgba(0,0,0,0.4)}
+.cta-btn-light{display:inline-block;padding:1rem 2.5rem;background:rgba(255,255,255,0.95);color:#1a1a1a;font-family:var(--font-mono);font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;border:none;border-radius:3rem;
+  transition:all 0.4s cubic-bezier(0.2,0.9,0.3,1);text-shadow:none}
+.cta-btn-light:hover{background:#fff;transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,0.25)}
+.footer-bottom-light{padding:2rem 3rem;font-size:0.7rem;color:rgba(255,255,255,0.5);text-align:center;font-family:var(--font-mono);position:relative;z-index:1;border-top:1px solid rgba(255,255,255,0.1)}
 
 @media(max-width:768px){
   nav{padding:1rem 1.5rem}
@@ -338,23 +342,27 @@ nav.nav-ground .back-link:hover{color:var(--accent)}
   </div>
 </section>
 
-<section class="g-section" style="border-top:1px solid var(--border-dark)" id="contact">
-  <div class="section-label">Get in Touch</div>
-  <h2 class="section-title-dark">Let's talk.</h2>
-  <p class="section-desc">Exploring a specific service or need a broader IT strategy conversation — we respond within 24 hours.</p>
-  <div class="contact-grid">
-    <div class="contact-card"><h4>Office</h4><p>Penang, Malaysia<br>On-site engagements nationwide</p></div>
-    <div class="contact-card"><h4>Email</h4><p><a href="mailto:hello@parsec.my">hello@parsec.my</a></p></div>
-    <div class="contact-card"><h4>Working Hours</h4><p>Monday — Friday<br>9:00 AM — 6:00 PM MYT<br>Emergency support for SLA clients</p></div>
-  </div>
-</section>
+<div class="scenery-flow">
+  <canvas id="sceneryCanvas"></canvas>
 
-<div class="cta-footer">
-  <h2>Ready to move forward?</h2>
-  <p>Tell us what you need. We'll match you with the right pillar and the right lead.</p>
-  <a href="mailto:hello@parsec.my" class="cta-btn">Contact Us</a>
+  <section class="g-section scenery-contact" id="contact">
+    <div class="section-label">Get in Touch</div>
+    <h2 class="section-title-dark">Let's talk.</h2>
+    <p class="section-desc">Exploring a specific service or need a broader IT strategy conversation — we respond within 24 hours.</p>
+    <div class="contact-grid">
+      <div class="contact-card"><h4>Office</h4><p>Penang, Malaysia<br>On-site engagements nationwide</p></div>
+      <div class="contact-card"><h4>Email</h4><p><a href="mailto:hello@parsec.my">hello@parsec.my</a></p></div>
+      <div class="contact-card"><h4>Working Hours</h4><p>Monday — Friday<br>9:00 AM — 6:00 PM MYT<br>Emergency support for SLA clients</p></div>
+    </div>
+  </section>
+
+  <div class="cta-footer">
+    <h2>Ready to move forward?</h2>
+    <p>Tell us what you need. We'll match you with the right pillar and the right lead.</p>
+    <a href="mailto:hello@parsec.my" class="cta-btn-light">Contact Us</a>
+  </div>
+  <div class="footer-bottom-light">© 2025 Parsec IT Professional Services. All rights reserved.</div>
 </div>
-<div class="footer-bottom">© 2025 Parsec IT Professional Services. All rights reserved.</div>
 </div>
 
 <script>
@@ -519,6 +527,166 @@ function drawDots(){
   requestAnimationFrame(drawDots);
 }
 drawDots();
+
+// ═══════════════════════════════════════════
+// SCENERY — Cream → Sky → Clouds → Mountains
+// ═══════════════════════════════════════════
+const scnCanvas=document.getElementById('sceneryCanvas');
+const scnCtx=scnCanvas.getContext('2d');
+let SCW,SCH;
+
+function resScenery(){
+  const d=devicePixelRatio||1;
+  const el=document.querySelector('.scenery-flow');
+  SCW=el.offsetWidth;SCH=el.offsetHeight;
+  scnCanvas.width=SCW*d;scnCanvas.height=SCH*d;
+  scnCanvas.style.width=SCW+'px';scnCanvas.style.height=SCH+'px';
+  scnCtx.setTransform(d,0,0,d,0,0);
+}
+resScenery();addEventListener('resize',resScenery);
+
+// Clouds — two layers: high wispy ones + lower cumulus
+const scnClouds=[];
+for(let i=0;i<10;i++){
+  scnClouds.push({
+    x:Math.random()*1.6-0.3,
+    y:0.30+Math.random()*0.20, // mid-section of canvas
+    w:0.10+Math.random()*0.16,
+    speed:(0.00002+Math.random()*0.00005)*(Math.random()>0.5?1:-1),
+    opacity:0.15+Math.random()*0.25,
+    layer:i<5?'high':'low'
+  });
+}
+
+// Mountain ridge helper
+function drawMtn(ctx,w,h,baseY,peaks,color,shadow){
+  ctx.beginPath();
+  ctx.moveTo(0,h);ctx.lineTo(0,baseY);
+  const step=w/(peaks.length-1);
+  for(let i=0;i<peaks.length;i++){
+    const px=i*step,py=baseY-peaks[i];
+    if(i===0){ctx.lineTo(px,py)}
+    else{ctx.quadraticCurveTo(((i-1)*step+px)/2,baseY-peaks[i-1],px,py)}
+  }
+  ctx.lineTo(w,baseY);ctx.lineTo(w,h);ctx.closePath();
+  const g=ctx.createLinearGradient(0,baseY-Math.max(...peaks),0,h);
+  g.addColorStop(0,color);g.addColorStop(1,shadow);
+  ctx.fillStyle=g;ctx.fill();
+}
+
+// Mist wisps
+const scnMist=[];
+for(let i=0;i<10;i++){
+  scnMist.push({
+    x:Math.random(),y:0.62+Math.random()*0.12,w:0.12+Math.random()*0.22,
+    speed:(0.000015+Math.random()*0.00003)*(Math.random()>0.5?1:-1),
+    opacity:0.04+Math.random()*0.07
+  });
+}
+
+let scnTime=0;
+function drawScenery(){
+  scnCtx.clearRect(0,0,SCW,SCH);
+  scnTime++;
+
+  // 1) Cream → sky gradient (top is cream matching page, fades into open sky blue)
+  const bg=scnCtx.createLinearGradient(0,0,0,SCH);
+  bg.addColorStop(0,'#f0ede8');     // cream — matches ground-zone
+  bg.addColorStop(0.06,'#edeae5');  // still cream
+  bg.addColorStop(0.15,'#dde0df'); // hint of blue-grey
+  bg.addColorStop(0.25,'#c0ccd5'); // soft blue haze
+  bg.addColorStop(0.38,'#8aa8c0'); // opening sky
+  bg.addColorStop(0.50,'#6a95b8'); // clear sky blue
+  bg.addColorStop(0.62,'#5585a8'); // deeper sky
+  bg.addColorStop(0.72,'#4a7898'); // towards horizon
+  bg.addColorStop(0.82,'#3d6a85'); // muted at mountains
+  bg.addColorStop(1.0,'#2a4a5a');  // dark base behind mountains
+  scnCtx.fillStyle=bg;
+  scnCtx.fillRect(0,0,SCW,SCH);
+
+  // 2) Warm golden horizon glow where mountains meet sky
+  const hY=SCH*0.72;
+  const hG=scnCtx.createRadialGradient(SCW*0.45,hY,0,SCW*0.45,hY,SCW*0.45);
+  hG.addColorStop(0,'rgba(255,225,150,0.12)');
+  hG.addColorStop(0.4,'rgba(255,210,130,0.06)');
+  hG.addColorStop(1,'rgba(255,210,130,0)');
+  scnCtx.fillStyle=hG;
+  scnCtx.fillRect(0,hY-SCH*0.2,SCW,SCH*0.4);
+
+  // 3) High wispy clouds (in the sky area)
+  scnClouds.forEach(c=>{
+    if(c.layer!=='high')return;
+    c.x+=c.speed;
+    if(c.x>1.4)c.x=-0.4;if(c.x<-0.4)c.x=1.4;
+    const cx=c.x*SCW,cy=c.y*SCH,cw=c.w*SCW;
+    const pulse=0.85+0.15*Math.sin(scnTime*0.002+c.x*8);
+    const cg=scnCtx.createRadialGradient(cx,cy,0,cx,cy,cw);
+    cg.addColorStop(0,`rgba(255,255,255,${c.opacity*pulse})`);
+    cg.addColorStop(0.4,`rgba(250,252,255,${c.opacity*pulse*0.5})`);
+    cg.addColorStop(1,'rgba(250,252,255,0)');
+    scnCtx.fillStyle=cg;
+    scnCtx.fillRect(cx-cw,cy-cw*0.25,cw*2,cw*0.5);
+  });
+
+  // 4) Lower cumulus clouds (closer to mountains)
+  scnClouds.forEach(c=>{
+    if(c.layer!=='low')return;
+    c.x+=c.speed;
+    if(c.x>1.4)c.x=-0.4;if(c.x<-0.4)c.x=1.4;
+    const cx=c.x*SCW,cy=(0.50+c.y*0.15)*SCH,cw=c.w*SCW*1.2;
+    const pulse=0.8+0.2*Math.sin(scnTime*0.0025+c.x*6);
+    const cg=scnCtx.createRadialGradient(cx,cy,0,cx,cy,cw);
+    cg.addColorStop(0,`rgba(240,245,250,${c.opacity*pulse*0.8})`);
+    cg.addColorStop(0.5,`rgba(230,238,245,${c.opacity*pulse*0.3})`);
+    cg.addColorStop(1,'rgba(230,238,245,0)');
+    scnCtx.fillStyle=cg;
+    scnCtx.fillRect(cx-cw,cy-cw*0.2,cw*2,cw*0.4);
+  });
+
+  // 5) Far mountains — hazy, blue-grey silhouette
+  drawMtn(scnCtx,SCW,SCH,SCH*0.74,
+    [0.04,0.10,0.07,0.14,0.09,0.16,0.11,0.08,0.13,0.06,0.10,0.15,0.07,0.12,0.05].map(v=>v*SCH),
+    'rgba(60,90,100,0.45)','rgba(50,80,90,0.6)');
+
+  // 6) Mid mountains — green-grey
+  drawMtn(scnCtx,SCW,SCH,SCH*0.80,
+    [0.03,0.08,0.12,0.06,0.14,0.09,0.05,0.11,0.08,0.13,0.04,0.10,0.07].map(v=>v*SCH),
+    'rgba(45,85,60,0.6)','rgba(35,70,50,0.75)');
+
+  // 7) Mist between mountain layers
+  scnMist.forEach(m=>{
+    m.x+=m.speed;
+    if(m.x>1.3)m.x=-0.25;if(m.x<-0.25)m.x=1.3;
+    const mx2=m.x*SCW,my2=m.y*SCH,mw=m.w*SCW;
+    const pulse=0.7+0.3*Math.sin(scnTime*0.0015+m.x*6);
+    const mg=scnCtx.createRadialGradient(mx2,my2,0,mx2,my2,mw);
+    mg.addColorStop(0,`rgba(200,220,230,${m.opacity*pulse})`);
+    mg.addColorStop(1,'rgba(200,220,230,0)');
+    scnCtx.fillStyle=mg;
+    scnCtx.fillRect(mx2-mw,my2-mw*0.25,mw*2,mw*0.5);
+  });
+
+  // 8) Near mountains — rich deep green, solid
+  drawMtn(scnCtx,SCW,SCH,SCH*0.86,
+    [0.02,0.06,0.09,0.04,0.11,0.07,0.03,0.08,0.06,0.10,0.03,0.07].map(v=>v*SCH),
+    'rgba(35,75,45,0.85)','rgba(25,55,35,0.95)');
+
+  // 9) Closest foothills — dark silhouette at very bottom
+  drawMtn(scnCtx,SCW,SCH,SCH*0.92,
+    [0.01,0.04,0.06,0.03,0.07,0.05,0.02,0.05,0.04,0.06,0.02].map(v=>v*SCH),
+    'rgba(25,50,35,0.9)','rgba(18,38,28,0.98)');
+
+  // 10) Dark vignette at very bottom for footer text
+  const btm=scnCtx.createLinearGradient(0,SCH*0.88,0,SCH);
+  btm.addColorStop(0,'rgba(15,25,20,0)');
+  btm.addColorStop(0.4,'rgba(15,25,20,0.3)');
+  btm.addColorStop(1,'rgba(15,25,20,0.6)');
+  scnCtx.fillStyle=btm;
+  scnCtx.fillRect(0,SCH*0.88,SCW,SCH*0.12);
+
+  requestAnimationFrame(drawScenery);
+}
+requestAnimationFrame(drawScenery);
 </script>
 </body>
 </html>
