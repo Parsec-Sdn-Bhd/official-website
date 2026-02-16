@@ -25,6 +25,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 3rem;display:
 .nav-links{display:flex;gap:2rem;list-style:none}
 .nav-links a{color:var(--fg-dim);text-decoration:none;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.3s}
 .nav-links a:hover{color:var(--fg)}
+.nav-toggle{display:none;background:none;border:none;color:var(--fg);font-size:1.5rem;cursor:pointer}
 
 /* ═══ HERO + WARP (unchanged) ═══ */
 .hero-warp{height:350vh;position:relative}
@@ -157,14 +158,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 3rem;display:
   .pillar-number{font-size:clamp(8rem,20vw,14rem);left:1.5rem}
   .pillar-stats{gap:1.5rem;flex-wrap:wrap}
   .radar-wrap{width:60vh;height:60vh;right:-25%;top:50%;opacity:0.4}
-  nav{padding:1rem 1.5rem}.nav-links{display:none}
+  nav{padding:1rem 1.5rem;flex-wrap:wrap}
+  .nav-toggle{display:block}
+  .nav-links{display:none;flex-direction:column;width:100%;gap:1rem;padding-top:1rem}
+  .nav-links.open{display:flex}
 }
 </style>
 </head>
 <body>
 <canvas id="cursorLight"></canvas>
 <div id="cursorDot"></div>
-<nav><div class="logo">Parsec</div><ul class="nav-links"><li><a href="#pillarsSection">Services</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+<nav><div class="logo">Parsec</div><button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">&#9776;</button><ul class="nav-links"><li><a href="#pillarsSection">Services</a></li><li><a href="about.html">About Us</a></li><li><a href="#contact">Contact</a></li></ul></nav>
 <div class="progress-track"><div class="progress-dot" data-target="0"></div><div class="progress-dot" data-target="1"></div><div class="progress-dot" data-target="2"></div><div class="progress-dot" data-target="3"></div><div class="progress-dot" data-target="4"></div></div>
 
 <!-- HERO + WARP + INTRO (unchanged) -->
