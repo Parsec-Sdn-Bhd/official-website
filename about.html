@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>About — Parsec</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --cream:#f0ede8;--cream-dim:rgba(240,237,232,0.5);
+  --dark:#1a1a1a;--dark-dim:rgba(26,26,26,0.45);
+  --border-light:rgba(240,237,232,0.08);
+  --border-dark:rgba(26,26,26,0.1);
+  --accent:#c8a55a;
+  --accent-dim:rgba(200,165,90,0.15);
+  --green:#8bd450;--red:#e74c3c;--blue:#3498db;--orange:#f39c12;--purple:#9b59b6;
+  --font-sans:'DM Sans',sans-serif;
+  --font-mono:'Space Mono',monospace;
+}
+body{background:var(--cream);color:var(--dark);font-family:var(--font-sans);line-height:1.6;overflow-x:hidden}
+a{text-decoration:none}
+
+/* ===== SKY BLEED — blue holds deep, fades to cream only at very end ===== */
+.sky-bleed{
+  position:relative;
+  background:linear-gradient(to bottom,
+    #1a2242 0%,
+    #1e2a52 6%,
+    #1e2a52 15%,
+    #1f2d58 24%,
+    #243366 32%,
+    #2e4078 40%,
+    #3a4f8a 48%,
+    #5a72a8 56%,
+    #7a92be 63%,
+    #a0b0cc 69%,
+    #c0c0bc 75%,
+    #d8d6d0 81%,
+    #e8e5df 88%,
+    #f0ede8 94%
+  );
+}
+#skyCanvas{position:absolute;top:0;left:0;width:100%;pointer-events:none;z-index:0}
+
+/* ===== GROUND ZONE ===== */
+.ground-zone{position:relative;background:var(--cream);color:var(--dark)}
+.ground-zone a{color:var(--dark)}
+#dotMatrix{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.blob{position:fixed;border-radius:50%;filter:blur(120px);opacity:0;z-index:0;pointer-events:none;animation:blobIn 2s forwards}
+.blob-1{width:clamp(350px,45vw,600px);height:clamp(350px,45vw,600px);top:45%;right:-8%;animation-delay:0.3s}
+.blob-2{width:clamp(280px,38vw,500px);height:clamp(280px,38vw,500px);top:65%;left:-10%;animation-delay:0.8s}
+.blob-3{width:clamp(220px,30vw,400px);height:clamp(220px,30vw,400px);bottom:10%;left:35%;animation-delay:1.2s}
+@keyframes blobIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+
+/* Cursor */
+.cursor-light{position:fixed;width:600px;height:600px;border-radius:50%;pointer-events:none;z-index:9999;
+  background:radial-gradient(circle,rgba(200,165,90,0.06) 0%,transparent 70%);transform:translate(-50%,-50%)}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.5rem 3rem;display:flex;justify-content:space-between;align-items:center;
+  backdrop-filter:blur(10px);transition:background 0.6s}
+nav.nav-sky{background:linear-gradient(to bottom,rgba(26,34,66,0.85),transparent)}
+nav.nav-ground{background:linear-gradient(to bottom,rgba(240,237,232,0.92),transparent)}
+.logo{font-family:var(--font-mono);font-size:1.1rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;transition:color 0.6s}
+.back-link{display:flex;align-items:center;gap:0.5rem;font-family:var(--font-mono);font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.6s}
+.back-link svg{width:16px;height:16px}
+nav.nav-sky .back-link,nav.nav-sky .logo{color:rgba(240,237,232,0.5)}
+nav.nav-sky .back-link:hover{color:var(--accent)}
+nav.nav-ground .back-link,nav.nav-ground .logo{color:rgba(26,26,26,0.4)}
+nav.nav-ground .back-link:hover{color:var(--accent)}
+
+/* Shared */
+.section-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
+
+/* Hero */
+.hero{min-height:85vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 3rem 6rem;position:relative;z-index:2}
+.hero-content{max-width:720px}
+.hero-label{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:1rem;opacity:0;animation:fadeUp 0.8s 0.2s forwards}
+.hero h1{font-family:var(--font-mono);font-size:clamp(2.5rem,5vw,4rem);font-weight:700;letter-spacing:0.02em;line-height:1.1;margin-bottom:1.5rem;color:var(--cream);opacity:0;animation:fadeUp 0.8s 0.4s forwards}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero-desc{color:var(--cream-dim);font-size:1.1rem;max-width:600px;line-height:1.8;opacity:0;animation:fadeUp 0.8s 0.6s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* Why cards (sky) */
+.why-section{position:relative;z-index:2;padding:4rem 3rem 6rem}
+.section-title-light{font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;letter-spacing:0.02em;margin-bottom:2rem;color:var(--cream)}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+.why-card{padding:2rem;border:1px solid var(--border-light);background:rgba(255,255,255,0.03);backdrop-filter:blur(8px);
+  transition:transform 0.4s cubic-bezier(0.2,0.9,0.3,1),border-color 0.3s,box-shadow 0.4s}
+.why-card:hover{transform:translateY(-4px);border-color:rgba(200,165,90,0.3);box-shadow:0 12px 40px rgba(0,0,0,0.15)}
+.why-icon{font-size:1.5rem;margin-bottom:1rem}
+.why-card h3{font-family:var(--font-mono);font-size:0.85rem;font-weight:700;margin-bottom:0.75rem;color:var(--cream)}
+.why-card p{font-size:0.85rem;color:var(--cream-dim);line-height:1.6}
+
+/* Pillars (mid-sky, light text) */
+.pillars-section{position:relative;z-index:2;padding:6rem 3rem}
+.pillars-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:0.75rem;margin-top:2rem}
+.pillar-item{padding:2rem 1.2rem;text-align:center;color:var(--cream);position:relative;overflow:hidden;
+  border:1px solid rgba(240,237,232,0.1);background:rgba(255,255,255,0.04);backdrop-filter:blur(8px);
+  transition:all 0.4s cubic-bezier(0.2,0.9,0.3,1)}
+.pillar-item::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.4s}
+.pillar-item::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;border-radius:1px;opacity:0;transition:all 0.4s}
+.pillar-item:hover{transform:translateY(-4px)}
+.pillar-item:hover::before{opacity:1}
+.pillar-item:hover::after{opacity:1;left:10%;right:10%}
+.p-green:hover::before{background:rgba(139,212,80,0.1)}
+.p-green:hover{border-color:rgba(139,212,80,0.25);box-shadow:0 8px 30px rgba(139,212,80,0.1)}
+.p-green .pillar-item-line,.p-green::after{background:var(--green)}
+.p-red:hover::before{background:rgba(231,76,60,0.1)}
+.p-red:hover{border-color:rgba(231,76,60,0.25);box-shadow:0 8px 30px rgba(231,76,60,0.1)}
+.p-red::after{background:var(--red)}
+.p-blue:hover::before{background:rgba(52,152,219,0.1)}
+.p-blue:hover{border-color:rgba(52,152,219,0.25);box-shadow:0 8px 30px rgba(52,152,219,0.1)}
+.p-blue::after{background:var(--blue)}
+.p-orange:hover::before{background:rgba(243,156,18,0.1)}
+.p-orange:hover{border-color:rgba(243,156,18,0.25);box-shadow:0 8px 30px rgba(243,156,18,0.1)}
+.p-orange::after{background:var(--orange)}
+.p-purple:hover::before{background:rgba(155,89,182,0.1)}
+.p-purple:hover{border-color:rgba(155,89,182,0.25);box-shadow:0 8px 30px rgba(155,89,182,0.1)}
+.p-purple::after{background:var(--purple)}
+.pillar-num{font-family:var(--font-mono);font-size:1.8rem;font-weight:700;margin-bottom:0.6rem;position:relative;opacity:0.3;
+  transition:opacity 0.4s}
+.pillar-item:hover .pillar-num{opacity:0.6}
+.pillar-name{font-family:var(--font-mono);font-size:0.75rem;font-weight:700;letter-spacing:0.03em;margin-bottom:0.4rem;position:relative}
+.pillar-lead{font-size:0.65rem;color:var(--cream-dim);position:relative}
+.p-green .pillar-num,.p-green .pillar-name{color:var(--green)}
+.p-red .pillar-num,.p-red .pillar-name{color:var(--red)}
+.p-blue .pillar-num,.p-blue .pillar-name{color:var(--blue)}
+.p-orange .pillar-num,.p-orange .pillar-name{color:var(--orange)}
+.p-purple .pillar-num,.p-purple .pillar-name{color:var(--purple)}
+
+/* Team (transitional — text goes dark, bg brightening) */
+.team-section{position:relative;z-index:2;padding:6rem 3rem}
+.section-title-mid{font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;letter-spacing:0.02em;margin-bottom:1rem;color:var(--dark)}
+.section-desc-mid{color:var(--dark-dim);max-width:600px;line-height:1.7;margin-bottom:2.5rem}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:2rem}
+.member{padding:2rem;border:1px solid rgba(26,26,26,0.08);background:rgba(240,237,232,0.5);backdrop-filter:blur(8px);position:relative;overflow:hidden;
+  transition:transform 0.4s cubic-bezier(0.2,0.9,0.3,1),border-color 0.4s,box-shadow 0.4s}
+.member::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;border-radius:50%;opacity:0;
+  transition:opacity 0.5s;pointer-events:none}
+.member:hover{transform:translateY(-5px);box-shadow:0 12px 40px rgba(0,0,0,0.08)}
+.member:hover::before{opacity:1}
+.member-top{display:flex;gap:1rem;align-items:center;margin-bottom:1rem;position:relative}
+.member-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:0.85rem;font-weight:700;flex-shrink:0;
+  transition:transform 0.4s cubic-bezier(0.2,0.9,0.3,1),box-shadow 0.4s}
+.member:hover .member-avatar{transform:scale(1.15) rotate(-3deg)}
+.member-name{font-family:var(--font-mono);font-size:0.9rem;font-weight:700;position:relative;color:var(--dark);transition:letter-spacing 0.3s}
+.member:hover .member-name{letter-spacing:0.04em}
+.member-role{font-size:0.65rem;font-family:var(--font-mono);letter-spacing:0.08em;text-transform:uppercase;margin-top:0.15rem;position:relative}
+.member-desc{font-size:0.8rem;color:var(--dark-dim);line-height:1.6;margin-bottom:0.75rem;position:relative}
+.member-certs{display:flex;flex-wrap:wrap;gap:0.4rem;position:relative}
+.cert-badge{font-family:var(--font-mono);font-size:0.5rem;letter-spacing:0.08em;text-transform:uppercase;padding:0.2rem 0.5rem;border:1px solid;border-radius:2px;
+  transition:transform 0.3s;display:inline-block}
+.member:hover .cert-badge{animation:badgeFloat 2s ease-in-out infinite}
+.member:hover .cert-badge:nth-child(2){animation-delay:0.15s}
+.member:hover .cert-badge:nth-child(3){animation-delay:0.3s}
+@keyframes badgeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.m-orange::before{background:radial-gradient(circle,rgba(243,156,18,0.1),transparent 60%)}
+.m-orange:hover{border-color:rgba(243,156,18,0.25)}
+.m-orange:hover .member-avatar{box-shadow:0 0 20px rgba(243,156,18,0.25)}
+.m-red::before{background:radial-gradient(circle,rgba(231,76,60,0.1),transparent 60%)}
+.m-red:hover{border-color:rgba(231,76,60,0.25)}
+.m-red:hover .member-avatar{box-shadow:0 0 20px rgba(231,76,60,0.25)}
+.m-blue::before{background:radial-gradient(circle,rgba(52,152,219,0.1),transparent 60%)}
+.m-blue:hover{border-color:rgba(52,152,219,0.25)}
+.m-blue:hover .member-avatar{box-shadow:0 0 20px rgba(52,152,219,0.25)}
+.m-green::before{background:radial-gradient(circle,rgba(139,212,80,0.1),transparent 60%)}
+.m-green:hover{border-color:rgba(139,212,80,0.25)}
+.m-green:hover .member-avatar{box-shadow:0 0 20px rgba(139,212,80,0.25)}
+.m-purple::before{background:radial-gradient(circle,rgba(155,89,182,0.1),transparent 60%)}
+.m-purple:hover{border-color:rgba(155,89,182,0.25)}
+.m-purple:hover .member-avatar{box-shadow:0 0 20px rgba(155,89,182,0.25)}
+.m-accent::before{background:radial-gradient(circle,rgba(200,165,90,0.1),transparent 60%)}
+.m-accent:hover{border-color:rgba(200,165,90,0.25)}
+.m-accent:hover .member-avatar{box-shadow:0 0 20px rgba(200,165,90,0.25)}
+.m-neutral::before{background:radial-gradient(circle,rgba(26,26,26,0.04),transparent 60%)}
+.m-neutral:hover{border-color:rgba(26,26,26,0.15)}
+.member-featured{grid-column:1/-1;display:flex;gap:3rem;padding:2.5rem}
+.member-featured .member-avatar{width:72px;height:72px;font-size:1.2rem}
+.member-featured .member-info{flex:1}
+
+/* Ground sections */
+.g-section{padding:5rem 3rem;position:relative;z-index:1}
+.section-title-dark{font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;letter-spacing:0.02em;margin-bottom:1rem;color:var(--dark)}
+.section-desc{color:var(--dark-dim);max-width:600px;line-height:1.7;margin-bottom:2.5rem}
+
+.reg-section{background:rgba(200,165,90,0.04);border-top:1px solid var(--border-dark);border-bottom:1px solid var(--border-dark)}
+.reg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:2rem}
+.reg-card{padding:1.5rem;border:1px solid var(--border-dark);text-align:center;transition:transform 0.3s,box-shadow 0.3s}
+.reg-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.04)}
+.reg-status{font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem}
+.reg-card h4{font-family:var(--font-mono);font-size:0.8rem;font-weight:700;margin-bottom:0.3rem}
+.reg-card p{font-size:0.7rem;color:var(--dark-dim)}
+
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2rem;margin-top:2rem}
+.contact-card{padding:2rem;border:1px solid var(--border-dark);transition:transform 0.3s}
+.contact-card:hover{transform:translateY(-2px)}
+.contact-card h4{font-family:var(--font-mono);font-size:0.75rem;font-weight:700;color:var(--accent);margin-bottom:0.75rem;letter-spacing:0.05em;text-transform:uppercase}
+.contact-card p{font-size:0.85rem;color:var(--dark-dim);line-height:1.7}
+.contact-card a{color:var(--dark);border-bottom:1px solid var(--border-dark);transition:border-color 0.3s}
+.contact-card a:hover{border-color:var(--accent)}
+
+.cta-footer{padding:6rem 3rem;text-align:center;border-top:1px solid var(--border-dark);position:relative;z-index:1}
+.cta-footer h2{font-family:var(--font-mono);font-size:clamp(1.5rem,3vw,2.5rem);font-weight:700;margin-bottom:1rem}
+.cta-footer p{color:var(--dark-dim);max-width:500px;margin:0 auto 2rem;line-height:1.6}
+.cta-btn{display:inline-block;padding:1rem 2.5rem;border:1px solid var(--accent);color:var(--accent);font-family:var(--font-mono);font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;
+  transition:all 0.4s cubic-bezier(0.2,0.9,0.3,1)}
+.cta-btn:hover{background:var(--accent);color:#fff;transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,165,90,0.2)}
+.footer-bottom{padding:2rem 3rem;border-top:1px solid var(--border-dark);font-size:0.7rem;color:var(--dark-dim);text-align:center;font-family:var(--font-mono);position:relative;z-index:1}
+
+@media(max-width:768px){
+  nav{padding:1rem 1.5rem}
+  .hero{padding:0 1.5rem 4rem;min-height:70vh}
+  .why-section,.pillars-section,.team-section{padding:4rem 1.5rem}
+  .g-section{padding:4rem 1.5rem}
+  .pillars-strip{grid-template-columns:1fr;gap:0.5rem}
+  .pillar-item{text-align:left;padding:1.2rem 1.5rem}
+  .pillar-num{font-size:1.2rem}
+  .member-featured{flex-direction:column;gap:1.5rem}
+  .team-grid{grid-template-columns:1fr}
+  .why-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="sky-bleed" id="skyBleed">
+  <canvas id="skyCanvas"></canvas>
+
+  <nav class="nav-sky" id="mainNav">
+    <a href="index.html" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back
+    </a>
+    <div class="logo">Parsec</div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-content">
+      <div class="hero-label">About Parsec</div>
+      <h1>Five pillars.<br><em>One mission.</em></h1>
+      <p class="hero-desc">A Malaysian IT professional services company built on a simple principle: every certification unlocks real work, every engagement funds the next capability. No theory without practice. No credentials without delivery.</p>
+    </div>
+  </header>
+
+  <section class="why-section">
+    <div class="section-label">Why Parsec</div>
+    <h2 class="section-title-light">What makes us different</h2>
+    <div class="why-grid">
+      <div class="why-card"><div class="why-icon">⚡</div><h3>AI-First Delivery</h3><p>Every service line is augmented by AI — from automated VAPT scoping to intelligent dashboard generation. A force multiplier that lets a focused team outperform firms ten times our size.</p></div>
+      <div class="why-card"><div class="why-icon">🔄</div><h3>Cert → Earn → Upgrade</h3><p>Get the cheapest relevant cert, immediately deliver paid work, use the revenue to fund the next credential. Nobody studies for six months without delivering to clients.</p></div>
+      <div class="why-card"><div class="why-icon">🏛</div><h3>Government Ready</h3><p>MOF registered, MDEC certified, NACSA licensed. We understand Malaysian procurement — from Class F quotations to enterprise-grade tenders.</p></div>
+      <div class="why-card"><div class="why-icon">🎯</div><h3>Pillar Ownership</h3><p>Each domain is owned end-to-end by a dedicated lead. They scope, deliver, and grow their practice. You get a specialist, not a generalist reading from a script.</p></div>
+      <div class="why-card"><div class="why-icon">🔗</div><h3>Cross-Pillar Synergy</h3><p>Cloud client needs security? BI client needs infrastructure? Our pillars refer internally — integrated solutions without managing multiple vendors.</p></div>
+      <div class="why-card"><div class="why-icon">📊</div><h3>Services Fund Products</h3><p>Client engagements generate market intelligence that feeds product development. Services deliver value now. Products scale what services cannot.</p></div>
+    </div>
+  </section>
+
+  <section class="pillars-section">
+    <div class="section-label">Service Pillars</div>
+    <h2 class="section-title-light">Five domains. Full coverage.</h2>
+    <div class="pillars-strip">
+      <a href="service-maintenance.html" class="pillar-item p-green"><div class="pillar-num">01</div><div class="pillar-name">Maintenance & Support</div><div class="pillar-lead">Led by Alif</div></a>
+      <a href="service-cybersecurity.html" class="pillar-item p-red"><div class="pillar-num">02</div><div class="pillar-name">Cybersecurity & Testing</div><div class="pillar-lead">Led by Izzudin</div></a>
+      <a href="service-analytics.html" class="pillar-item p-blue"><div class="pillar-num">03</div><div class="pillar-name">Data Analytics & BI</div><div class="pillar-lead">Led by Efy</div></a>
+      <a href="service-devops.html" class="pillar-item p-orange"><div class="pillar-num">04</div><div class="pillar-name">DevOps & Cloud</div><div class="pillar-lead">Led by Aiman</div></a>
+      <a href="service-consultancy.html" class="pillar-item p-purple"><div class="pillar-num">05</div><div class="pillar-name">Consultancy & Training</div><div class="pillar-lead">Led by Firdaus</div></a>
+    </div>
+  </section>
+
+  <section class="team-section">
+    <div class="section-label">The Team</div>
+    <h2 class="section-title-mid">People behind the signal</h2>
+    <p class="section-desc-mid">Seven people, five pillars. Each lead owns their domain — client conversations, delivery, and growth.</p>
+    <div class="team-grid">
+      <div class="member member-featured m-accent">
+        <div class="member-avatar" style="background:var(--accent-dim);color:var(--accent)">FD</div>
+        <div class="member-info">
+          <div class="member-name">Firdaus</div>
+          <div class="member-role" style="color:var(--accent)">CEO — Strategy, Training & Product</div>
+          <p class="member-desc">Sets company strategy, builds the advisory network, leads consultancy and training directly, and oversees product development. The connective tissue between all five pillars.</p>
+          <div class="member-certs">
+            <span class="cert-badge" style="border-color:var(--purple);color:var(--purple)">HRD Corp TTT</span>
+            <span class="cert-badge" style="border-color:var(--purple);color:var(--purple)">Accredited Trainer</span>
+            <span class="cert-badge" style="border-color:var(--accent);color:var(--accent)">Strategy</span>
+          </div>
+        </div>
+      </div>
+      <div class="member m-neutral">
+        <div class="member-top"><div class="member-avatar" style="background:rgba(26,26,26,0.06);color:var(--dark)">AM</div><div><div class="member-name">Amirul</div><div class="member-role" style="color:var(--dark-dim)">Sales & Marketing</div></div></div>
+        <p class="member-desc">Cross-pillar pipeline development. Prospect lists, meetings, proposals, and the sales engine feeding all five domains.</p>
+        <div class="member-certs"><span class="cert-badge" style="border-color:var(--dark-dim);color:var(--dark-dim)">Business Dev</span><span class="cert-badge" style="border-color:var(--dark-dim);color:var(--dark-dim)">Gov't Tenders</span></div>
+      </div>
+      <div class="member m-orange">
+        <div class="member-top"><div class="member-avatar" style="background:rgba(243,156,18,0.12);color:var(--orange)">AI</div><div><div class="member-name">Aiman</div><div class="member-role" style="color:var(--orange)">Cloud & DevOps Lead</div></div></div>
+        <p class="member-desc">Cloud infrastructure from advisory through migration, containers, and managed services. AWS Malaysia Region and Kubernetes specialist.</p>
+        <div class="member-certs"><span class="cert-badge" style="border-color:var(--orange);color:var(--orange)">AWS SA Associate</span><span class="cert-badge" style="border-color:var(--orange);color:var(--orange)">Terraform</span><span class="cert-badge" style="border-color:var(--orange);color:var(--orange)">CKA</span></div>
+      </div>
+      <div class="member m-red">
+        <div class="member-top"><div class="member-avatar" style="background:rgba(231,76,60,0.12);color:var(--red)">IZ</div><div><div class="member-name">Izzudin</div><div class="member-role" style="color:var(--red)">Cybersecurity & Testing Lead</div></div></div>
+        <p class="member-desc">Full security lifecycle — VAPT, compliance assessments, software testing. CREST, CompTIA, and ISTQB certified.</p>
+        <div class="member-certs"><span class="cert-badge" style="border-color:var(--red);color:var(--red)">CREST CRT</span><span class="cert-badge" style="border-color:var(--red);color:var(--red)">Security+</span><span class="cert-badge" style="border-color:var(--red);color:var(--red)">ISTQB</span></div>
+      </div>
+      <div class="member m-blue">
+        <div class="member-top"><div class="member-avatar" style="background:rgba(52,152,219,0.12);color:var(--blue)">EF</div><div><div class="member-name">Efy</div><div class="member-role" style="color:var(--blue)">BI & Analytics Lead</div></div></div>
+        <p class="member-desc">End-to-end analytics — data discovery through dashboard deployment and retainer support. Power BI, SQL, Python.</p>
+        <div class="member-certs"><span class="cert-badge" style="border-color:var(--blue);color:var(--blue)">PL-300</span><span class="cert-badge" style="border-color:var(--blue);color:var(--blue)">Google Analytics</span><span class="cert-badge" style="border-color:var(--blue);color:var(--blue)">DP-900</span></div>
+      </div>
+      <div class="member m-green">
+        <div class="member-top"><div class="member-avatar" style="background:rgba(139,212,80,0.12);color:var(--green)">AL</div><div><div class="member-name">Alif</div><div class="member-role" style="color:var(--green)">Maintenance & Support Lead</div></div></div>
+        <p class="member-desc">SLA-based maintenance, incident resolution, ongoing support. ITIL-certified with vendor credentials matched to client stacks.</p>
+        <div class="member-certs"><span class="cert-badge" style="border-color:var(--green);color:var(--green)">ITIL 4</span><span class="cert-badge" style="border-color:var(--green);color:var(--green)">ITIL CDS</span><span class="cert-badge" style="border-color:var(--green);color:var(--green)">Vendor Cert</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="ground-zone" id="groundZone">
+<canvas id="dotMatrix"></canvas>
+<div class="blob blob-1" style="background:rgba(200,165,90,0.05)"></div>
+<div class="blob blob-2" style="background:rgba(200,165,90,0.035)"></div>
+<div class="blob blob-3" style="background:rgba(200,165,90,0.025)"></div>
+<div class="cursor-light" id="cursorLight"></div>
+
+<section class="g-section reg-section">
+  <div class="section-label">Compliance & Registrations</div>
+  <h2 class="section-title-dark">Tender-ready credentials</h2>
+  <p class="section-desc">The registrations that let us compete in Malaysia's government and enterprise market.</p>
+  <div class="reg-grid">
+    <div class="reg-card"><div class="reg-status">Registered</div><h4>SSM — Sdn Bhd</h4><p>Companies Commission of Malaysia</p></div>
+    <div class="reg-card"><div class="reg-status">Registered</div><h4>MOF — ePerolehan</h4><p>Ministry of Finance — Gov't Procurement</p></div>
+    <div class="reg-card"><div class="reg-status">Registered</div><h4>MDEC Digital Status</h4><p>Malaysia Digital Economy Corporation</p></div>
+    <div class="reg-card"><div class="reg-status">Licensed</div><h4>NACSA License</h4><p>National Cyber Security Agency — VAPT</p></div>
+    <div class="reg-card"><div class="reg-status">Registered</div><h4>HRD Corp Provider</h4><p>Registered Training Provider — eTRiS</p></div>
+    <div class="reg-card"><div class="reg-status">Insured</div><h4>Professional Indemnity</h4><p>Liability Coverage for IT Services</p></div>
+  </div>
+</section>
+
+<section class="g-section" style="border-top:1px solid var(--border-dark)" id="contact">
+  <div class="section-label">Get in Touch</div>
+  <h2 class="section-title-dark">Let's talk.</h2>
+  <p class="section-desc">Exploring a specific service or need a broader IT strategy conversation — we respond within 24 hours.</p>
+  <div class="contact-grid">
+    <div class="contact-card"><h4>Office</h4><p>Penang, Malaysia<br>On-site engagements nationwide</p></div>
+    <div class="contact-card"><h4>Email</h4><p><a href="mailto:hello@parsec.my">hello@parsec.my</a></p></div>
+    <div class="contact-card"><h4>Working Hours</h4><p>Monday — Friday<br>9:00 AM — 6:00 PM MYT<br>Emergency support for SLA clients</p></div>
+  </div>
+</section>
+
+<div class="cta-footer">
+  <h2>Ready to move forward?</h2>
+  <p>Tell us what you need. We'll match you with the right pillar and the right lead.</p>
+  <a href="mailto:hello@parsec.my" class="cta-btn">Contact Us</a>
+</div>
+<div class="footer-bottom">© 2025 Parsec IT Professional Services. All rights reserved.</div>
+</div>
+
+<script>
+const cl=document.getElementById('cursorLight');
+let mx=0,my=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cl.style.left=mx+'px';cl.style.top=my+'px'});
+
+const nav=document.getElementById('mainNav');
+const groundZone=document.getElementById('groundZone');
+function updateNav(){
+  const gTop=groundZone.getBoundingClientRect().top;
+  if(gTop<80){nav.className='nav-ground'}else{nav.className='nav-sky'}
+}
+window.addEventListener('scroll',updateNav);
+updateNav();
+
+// Sky canvas — stars
+const skyBleed=document.getElementById('skyBleed');
+const skyCanvas=document.getElementById('skyCanvas');
+const skyCtx=skyCanvas.getContext('2d');
+let SW,SH;
+const stars=[];
+for(let i=0;i<180;i++){
+  stars.push({x:Math.random(),y:Math.random()*0.4,size:0.3+Math.random()*2.2,
+    brightness:0.15+Math.random()*0.5,twinkleSpeed:0.002+Math.random()*0.008,twinklePhase:Math.random()*Math.PI*2});
+}
+function initSky(){
+  const d=window.devicePixelRatio||1;
+  SW=skyBleed.offsetWidth;SH=skyBleed.offsetHeight;
+  skyCanvas.width=SW*d;skyCanvas.height=SH*d;
+  skyCanvas.style.width=SW+'px';skyCanvas.style.height=SH+'px';
+  skyCtx.setTransform(d,0,0,d,0,0);
+}
+initSky();
+window.addEventListener('resize',initSky);
+
+let skyTime=0;
+const shootingStars=[];
+function drawSky(){
+  skyCtx.clearRect(0,0,SW,SH);
+  skyTime++;
+  // Warm glow at top
+  const hGlow=skyCtx.createRadialGradient(SW/2,SH*0.01,0,SW/2,SH*0.01,SW*0.5);
+  hGlow.addColorStop(0,'rgba(180,140,90,0.06)');
+  hGlow.addColorStop(0.4,'rgba(140,110,80,0.03)');
+  hGlow.addColorStop(1,'transparent');
+  skyCtx.fillStyle=hGlow;
+  skyCtx.fillRect(0,0,SW,SH*0.15);
+  // Atmospheric line
+  const lG=skyCtx.createLinearGradient(SW*0.15,0,SW*0.85,0);
+  lG.addColorStop(0,'rgba(140,160,200,0)');
+  lG.addColorStop(0.5,'rgba(160,180,220,0.08)');
+  lG.addColorStop(1,'rgba(140,160,200,0)');
+  skyCtx.fillStyle=lG;
+  skyCtx.fillRect(0,0,SW,2);
+  // Stars
+  stars.forEach(s=>{
+    const sx=s.x*SW,sy=s.y*SH;
+    const yFade=s.y<0.15?1:Math.max(0,1-(s.y-0.15)/0.25);
+    const twinkle=0.5+0.5*Math.sin(skyTime*s.twinkleSpeed+s.twinklePhase);
+    const alpha=s.brightness*yFade*twinkle;
+    if(alpha<0.01)return;
+    skyCtx.beginPath();
+    skyCtx.arc(sx,sy,s.size*0.5,0,Math.PI*2);
+    skyCtx.fillStyle='rgba(220,225,240,'+alpha+')';
+    skyCtx.fill();
+    if(s.size>1.2&&alpha>0.15){
+      const gG=skyCtx.createRadialGradient(sx,sy,0,sx,sy,s.size*2);
+      gG.addColorStop(0,'rgba(200,210,240,'+alpha*0.3+')');
+      gG.addColorStop(1,'rgba(200,210,240,0)');
+      skyCtx.fillStyle=gG;
+      skyCtx.beginPath();skyCtx.arc(sx,sy,s.size*2,0,Math.PI*2);skyCtx.fill();
+    }
+  });
+
+  // Shooting stars
+  shootingStars.forEach(ss=>{
+    ss.life++;
+    const progress=ss.life/ss.maxLife;
+    if(progress>=1){ss.dead=true;return}
+    // Position along path
+    const cx=ss.x+ss.vx*ss.life;
+    const cy=ss.y+ss.vy*ss.life;
+    // Fade: quick in, long tail out
+    const fade=progress<0.15?progress/0.15:Math.max(0,1-(progress-0.15)/0.85);
+    const alpha=fade*ss.brightness;
+    if(alpha<0.005)return;
+    // Trail
+    const tailLen=ss.tailLength;
+    const tx=cx-ss.vx*tailLen;
+    const ty=cy-ss.vy*tailLen;
+    const trailGrad=skyCtx.createLinearGradient(tx,ty,cx,cy);
+    trailGrad.addColorStop(0,'rgba(220,230,255,0)');
+    trailGrad.addColorStop(0.6,'rgba(220,230,255,'+alpha*0.3+')');
+    trailGrad.addColorStop(1,'rgba(255,255,255,'+alpha+')');
+    skyCtx.strokeStyle=trailGrad;
+    skyCtx.lineWidth=ss.width;
+    skyCtx.lineCap='round';
+    skyCtx.beginPath();
+    skyCtx.moveTo(tx,ty);
+    skyCtx.lineTo(cx,cy);
+    skyCtx.stroke();
+    // Head glow
+    const headGlow=skyCtx.createRadialGradient(cx,cy,0,cx,cy,ss.width*4);
+    headGlow.addColorStop(0,'rgba(200,210,240,'+alpha*0.5+')');
+    headGlow.addColorStop(1,'rgba(200,210,240,0)');
+    skyCtx.fillStyle=headGlow;
+    skyCtx.beginPath();
+    skyCtx.arc(cx,cy,ss.width*4,0,Math.PI*2);
+    skyCtx.fill();
+  });
+  // Remove dead, spawn new
+  for(let i=shootingStars.length-1;i>=0;i--){if(shootingStars[i].dead)shootingStars.splice(i,1)}
+  if(Math.random()<0.008&&shootingStars.length<3){
+    const angle=0.3+Math.random()*0.5; // ~17-46 degrees downward
+    const speed=3+Math.random()*4;
+    shootingStars.push({
+      x:Math.random()*SW*0.8,
+      y:Math.random()*SH*0.25,
+      vx:Math.cos(angle)*speed,
+      vy:Math.sin(angle)*speed,
+      life:0,
+      maxLife:40+Math.random()*60,
+      tailLength:12+Math.random()*18,
+      width:0.5+Math.random()*1.2,
+      brightness:0.4+Math.random()*0.5,
+      dead:false
+    });
+  }
+
+  requestAnimationFrame(drawSky);
+}
+drawSky();
+
+// Blobs
+document.querySelectorAll('.blob').forEach((b,i)=>{
+  const speed=[0.0003,0.00025,0.0002][i],rx=[30,25,20][i],ry=[20,30,25][i],phase=i*2.1;
+  function drift(){const t=Date.now()*speed;b.style.transform='translate('+Math.sin(t+phase)*rx+'px,'+Math.cos(t*0.7+phase)*ry+'px)';requestAnimationFrame(drift)}
+  drift();
+});
+
+// Dot matrix
+const cvs=document.getElementById('dotMatrix'),ctx=cvs.getContext('2d');
+const ACCENT=[200,165,90],spacing=28;
+let dots=[],DW,DH;
+function initDots(){
+  DW=cvs.width=window.innerWidth;DH=cvs.height=window.innerHeight;dots=[];
+  for(let x=spacing;x<DW;x+=spacing)for(let y=spacing;y<DH;y+=spacing)dots.push({x,y,baseAlpha:0.05+Math.random()*0.03});
+}
+initDots();
+window.addEventListener('resize',initDots);
+function drawDots(){
+  ctx.clearRect(0,0,DW,DH);
+  const gTop=groundZone.getBoundingClientRect().top;
+  if(gTop<window.innerHeight){
+    for(let i=0;i<dots.length;i++){
+      const d=dots[i],dx=d.x-mx,dy=d.y-my,dist=Math.sqrt(dx*dx+dy*dy),proximity=Math.max(0,1-dist/180);
+      if(proximity>0){ctx.beginPath();ctx.arc(d.x,d.y,1+proximity*1.5,0,Math.PI*2);ctx.fillStyle='rgba('+ACCENT[0]+','+ACCENT[1]+','+ACCENT[2]+','+proximity*0.45+')';ctx.fill()}
+      else{ctx.beginPath();ctx.arc(d.x,d.y,0.8,0,Math.PI*2);ctx.fillStyle='rgba(0,0,0,'+d.baseAlpha+')';ctx.fill()}
+    }
+  }
+  requestAnimationFrame(drawDots);
+}
+drawDots();
+</script>
+</body>
+</html>
